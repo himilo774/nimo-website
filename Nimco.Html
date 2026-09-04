@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Nimco 🎉</title>
+
+<!-- ============================================================
+     HAPPY BIRTHDAY NIMCO — a personal gift website
+     ------------------------------------------------------------
+     HOW TO CUSTOMISE (read me first!)
+     1. PHOTOS  → search "REPLACE PHOTO" in this file. Each <img>
+        has a placeholder src from picsum.photos. Just swap the
+        src="..." for your own image link or a local file like
+        "photos/nimco1.jpg".
+     2. CAPTIONS → search "REPLACE CAPTION" to edit the little
+        handwritten-style notes under each photo.
+     3. THE LOCKED LETTER → search "REPLACE LETTER" to edit the
+        private message, and "REPLACE PASSWORD" to change the
+        name required to unlock it (currently "nimco").
+     4. WISH CARDS → search "REPLACE WISH" to edit the birthday
+        message cards.
+     5. SAVE THE DATE → search "REPLACE DATE" (in the JS) to change
+        the countdown target date, currently September 9, 2026.
+        The calendar grid itself is hand-built HTML under
+        id="calendar" — the "9" cell has class="day special".
+     6. COLOURS → all colours are CSS variables at the very top
+        of the <style> block under :root — change once, updates
+        everywhere.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Baloo+2:wght@500;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ 1. DESIGN TOKENS ============ */
+  :root{
+    --bg-deep:      #ba5454;
+    --bg-deep-2:    #923519;
+    --bg-deep-3:    #b84730;
+    --accent-gold:  #FFCB47;
+    --accent-coral: #FF6B6B;
+    --accent-teal:  #21D5B4;
+    --accent-pink:  #F4548C;
+    --accent-sky:   #52C7F2;
+    --text-light:   #FFF8F2;
+    --text-soft:    #E7D9FF;
+    --card-bg:      rgba(255,255,255,0.07);
+    --card-border:  rgba(255,255,255,0.18);
+
+    --font-display: 'Pacifico', cursive;
+    --font-head:    'Baloo 2', sans-serif;
+    --font-body:    'Quicksand', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    font-family:var(--font-body);
+    color:var(--text-light);
+    background:
+      radial-gradient(ellipse at 20% 0%, var(--bg-deep-3) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 10%, var(--bg-deep-2) 0%, transparent 50%),
+      linear-gradient(180deg, var(--bg-deep) 0%, #1A0730 100%);
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+
+  :focus-visible{
+    outline:3px solid var(--accent-gold);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  .section{
+    position:relative;
+    padding:5.5rem 1.5rem;
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  .eyebrow{
+    font-family:var(--font-head);
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:.8rem;
+    color:var(--accent-gold);
+    display:inline-block;
+    margin-bottom:.9rem;
+  }
+
+  .section-title{
+    font-family:var(--font-head);
+    font-weight:800;
+    font-size:clamp(1.8rem, 4vw, 2.7rem);
+    color:var(--text-light);
+    margin-bottom:.6rem;
+    line-height:1.15;
+  }
+
+  .section-sub{
+    font-size:1.05rem;
+    color:var(--text-soft);
+    max-width:560px;
+    margin-bottom:2.6rem;
+    line-height:1.6;
+  }
+
+  /* ============ floating hearts / sparkles ambient bg ============ */
+  #ambient{
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .amb-heart{
+    position:absolute;
+    bottom:-10%;
+    font-size:1.4rem;
+    opacity:.35;
+    animation:floatUp linear infinite;
+    filter:drop-shadow(0 0 6px rgba(255,255,255,.25));
+  }
+  @keyframes floatUp{
+    from{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:.45; }
+    90%{ opacity:.35; }
+    to{ transform:translateY(-110vh) translateX(20px) rotate(25deg); opacity:0; }
+  }
+
+  /* ============ 2. HERO / BALLOONS ============ */
+  #hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem 1.5rem;
+    overflow:hidden;
+  }
+
+  #balloon-layer{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+  }
+
+  .balloon{
+    position:absolute;
+    bottom:-20%;
+    border-radius:50% 50% 50% 50% / 45% 45% 55% 55%;
+    box-shadow: inset -8px -10px 18px rgba(0,0,0,.18), inset 8px 10px 14px rgba(255,255,255,.35);
+    animation-name: riseUp;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+  }
+  .balloon::after{ /* string */
+    content:'';
+    position:absolute;
+    left:50%;
+    top:100%;
+    width:1px;
+    height:46px;
+    background:rgba(255,255,255,.45);
+    transform:translateX(-50%);
+  }
+  .balloon::before{ /* knot */
+    content:'';
+    position:absolute;
+    left:50%; bottom:-6px;
+    width:8px; height:8px;
+    border-radius:50%;
+    background:inherit;
+    transform:translateX(-50%);
+  }
+  @keyframes riseUp{
+    0%{ transform:translateY(0) translateX(0) rotate(-4deg); }
+    25%{ transform:translateY(-30vh) translateX(18px) rotate(4deg); }
+    50%{ transform:translateY(-58vh) translateX(-14px) rotate(-3deg); }
+    75%{ transform:translateY(-84vh) translateX(12px) rotate(3deg); }
+    100%{ transform:translateY(-118vh) translateX(0) rotate(0deg); opacity:0; }
+  }
+
+  .confetti-piece{
+    position:absolute;
+    top:-5%;
+    width:9px; height:14px;
+    opacity:.95;
+    animation-name: confettiFall;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+  @keyframes confettiFall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform:translateY(108vh) rotate(540deg); opacity:0; }
+  }
+
+  .hero-inner{ position:relative; z-index:2; }
+
+  .hero-eyebrow{
+    font-family:var(--font-head);
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    font-size:.85rem;
+    color:var(--accent-sky);
+    margin-bottom:1.2rem;
+    display:inline-block;
+  }
+
+  .hero-title{
+    font-family:var(--font-display);
+    font-size:clamp(2.6rem, 9vw, 5.6rem);
+    line-height:1.05;
+    background:linear-gradient(90deg, var(--accent-gold), var(--accent-coral) 45%, var(--accent-pink) 75%, var(--accent-sky));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter:drop-shadow(0 4px 24px rgba(0,0,0,.35));
+    margin-bottom:.4rem;
+  }
+
+  .hero-name{
+    font-family:var(--font-display);
+    font-size:clamp(3.2rem, 12vw, 7rem);
+    color:var(--text-light);
+    text-shadow: 0 0 22px rgba(255,203,71,.55), 0 4px 30px rgba(0,0,0,.4);
+  }
+
+  .hero-tagline{
+    margin-top:1.6rem;
+    font-size:clamp(1rem, 2.4vw, 1.25rem);
+    color:var(--text-soft);
+    max-width:520px;
+    margin-left:auto; margin-right:auto;
+    line-height:1.7;
+  }
+
+  .scroll-cue{
+    margin-top:3rem;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.4rem;
+    font-family:var(--font-head);
+    font-size:.85rem;
+    letter-spacing:.08em;
+    color:var(--text-soft);
+    opacity:.8;
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  .scroll-cue span.arrow{ font-size:1.3rem; }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(8px); }
+  }
+
+  /* ============ 2b. FILM STRIP REEL (signature element) ============ */
+  #reel{
+    position:relative;
+    padding:3.4rem 0 4rem;
+    overflow:hidden;
+    background:linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.35));
+  }
+  .reel-heading{
+    text-align:center;
+    margin-bottom:2.2rem;
+    padding:0 1.5rem;
+    position:relative;
+    z-index:3;
+  }
+  .reel-heading .eyebrow{ display:inline-block; }
+  .reel-heading h2{
+    font-family:var(--font-head);
+    font-weight:800;
+    font-size:clamp(1.6rem, 4vw, 2.3rem);
+    color:var(--text-light);
+  }
+
+  .filmstrip-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    width:max-content;
+    padding:10px 14px;
+    background:#0c0c0c;
+    box-shadow:0 10px 26px rgba(0,0,0,.45);
+    animation:scrollStrip linear infinite;
+  }
+  .filmstrip-row.reverse{ animation-direction:reverse; }
+  .filmstrip-row::before, .filmstrip-row::after{ content:none; }
+
+  .filmstrip-track{
+    position:relative;
+    transform:rotate(-3.2deg);
+    margin:0 -2rem 1.1rem;
+  }
+  .filmstrip-track.tilt-b{ transform:rotate(2.6deg); }
+
+  .sprocket-row{
+    display:flex;
+    justify-content:space-between;
+    padding:0 6px;
+  }
+  .sprocket-row span{
+    width:9px; height:6px;
+    background:#f4f1ea;
+    border-radius:1px;
+    opacity:.85;
+  }
+
+  .film-frame{
+    position:relative;
+    width:92px;
+    height:92px;
+    flex:0 0 auto;
+    border:3px solid #050505;
+    overflow:hidden;
+  }
+  .film-frame img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+    filter:saturate(1.05);
+  }
+
+  @keyframes scrollStrip{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+
+  .reel-feature{
+    position:relative;
+    z-index:4;
+    max-width:300px;
+    margin:-2.4rem auto 0;
+    display:block;
+  }
+  .reel-feature img{
+    width:100%;
+    aspect-ratio:3/4;
+    object-fit:cover;
+    border:8px solid #fff;
+    border-radius:6px;
+    box-shadow:0 24px 46px rgba(0,0,0,.5);
+    transform:rotate(-2deg);
+  }
+  .reel-caption{
+    text-align:center;
+    max-width:320px;
+    margin:1.4rem auto 0;
+    font-family:var(--font-head);
+    font-size:1rem;
+    color:var(--text-soft);
+    line-height:1.6;
+    position:relative;
+    z-index:4;
+    padding:0 1.5rem;
+  }
+  .reel-caption b{ color:var(--accent-gold); }
+
+  @media (max-width:600px){
+    .film-frame{ width:74px; height:74px; }
+    .reel-feature{ max-width:230px; }
+  }
+
+  /* ============ 3. GALLERY ============ */
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1.6rem 1.4rem;
+    position:relative;
+    z-index:1;
+  }
+  @media (max-width:760px){
+    .gallery-grid{ grid-template-columns:repeat(2, 1fr); }
+  }
+  @media (max-width:480px){
+    .gallery-grid{ grid-template-columns:1fr; max-width:320px; margin:0 auto; }
+  }
+
+  .polaroid{
+    background:#fffdf7;
+    padding:.7rem .7rem 1.1rem;
+    border-radius:6px;
+    box-shadow:0 14px 30px rgba(0,0,0,.35);
+    transform:rotate(var(--tilt, -3deg));
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .polaroid:hover{
+    transform:rotate(0deg) translateY(-6px) scale(1.03);
+    box-shadow:0 22px 40px rgba(0,0,0,.45);
+  }
+  .polaroid img{
+    width:100%;
+    aspect-ratio:4/5;
+    object-fit:cover;
+    border-radius:2px;
+  }
+  .polaroid figcaption{
+    font-family:var(--font-head);
+    color:#3a2a1a;
+    font-size:.92rem;
+    text-align:center;
+    margin-top:.65rem;
+  }
+  .polaroid:nth-child(1){ --tilt:-4deg; }
+  .polaroid:nth-child(2){ --tilt:3deg; }
+  .polaroid:nth-child(3){ --tilt:-2deg; }
+  .polaroid:nth-child(4){ --tilt:2deg; }
+  .polaroid:nth-child(5){ --tilt:-3deg; }
+  .polaroid:nth-child(6){ --tilt:4deg; }
+
+/* Video Section */
+.hero-video-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.hero-video-wrap video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+
+  /* ============ 4. WISH CARDS ============ */
+  .wish-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1.4rem;
+  }
+  @media (max-width:760px){ .wish-grid{ grid-template-columns:1fr; } }
+
+  .wish-card{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    backdrop-filter:blur(6px);
+    border-radius:18px;
+    padding:1.8rem 1.6rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .wish-card .glyph{
+    font-size:1.8rem;
+    margin-bottom:.8rem;
+    display:inline-block;
+  }
+  .wish-card h3{
+    font-family:var(--font-head);
+    font-size:1.15rem;
+    margin-bottom:.55rem;
+    color:var(--accent-gold);
+  }
+  .wish-card p{
+    color:var(--text-soft);
+    line-height:1.65;
+    font-size:.98rem;
+  }
+
+  /* ============ 4b. SAVE THE DATE / CALENDAR ============ */
+  .cal-wrap{
+    display:grid;
+    grid-template-columns:0.85fr 1.15fr;
+    gap:2.2rem;
+    align-items:center;
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    backdrop-filter:blur(6px);
+    border-radius:22px;
+    padding:2rem;
+  }
+  @media (max-width:760px){
+    .cal-wrap{ grid-template-columns:1fr; }
+  }
+
+  .cal-frame{
+    position:relative;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 18px 34px rgba(0,0,0,.4);
+    border:6px solid rgba(255,255,255,.85);
+  }
+  .cal-frame img{
+    width:100%;
+    aspect-ratio:4/5;
+    object-fit:cover;
+    display:block;
+  }
+
+  .cal-month{
+    font-family:var(--font-head);
+    font-weight:800;
+    font-size:1.5rem;
+    color:var(--accent-gold);
+    margin-bottom:1rem;
+  }
+
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:.4rem;
+    text-align:center;
+  }
+  .cal-grid .dow{
+    font-family:var(--font-head);
+    font-size:.78rem;
+    color:var(--text-soft);
+    opacity:.75;
+    padding-bottom:.3rem;
+  }
+  .cal-grid .day{
+    font-family:var(--font-body);
+    font-size:.9rem;
+    color:var(--text-light);
+    padding:.5rem 0;
+    border-radius:8px;
+  }
+  .cal-grid .day.blank{ opacity:0; }
+  .cal-grid .day.special{
+    background:linear-gradient(135deg, var(--accent-gold), var(--accent-coral));
+    color:#2a0f0f;
+    font-weight:800;
+    box-shadow:0 0 0 4px rgba(255,203,71,.25), 0 8px 18px rgba(255,107,107,.4);
+    animation:pulseDate 2.4s ease-in-out infinite;
+  }
+  @keyframes pulseDate{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.12); }
+  }
+
+  #countdown{
+    margin-top:1.4rem;
+    font-family:var(--font-head);
+    font-size:1.05rem;
+    color:var(--accent-sky);
+  }
+
+  /* ============ 5. LOCKED LETTER ============ */
+  #letter{
+    text-align:center;
+  }
+  .envelope-wrap{
+    max-width:480px;
+    margin:0 auto;
+    background:linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+    border:1px solid var(--card-border);
+    border-radius:22px;
+    padding:2.6rem 2rem;
+    backdrop-filter:blur(8px);
+  }
+  .envelope-icon{
+    font-size:3.2rem;
+    margin-bottom:1rem;
+    display:inline-block;
+    animation:swing 3.2s ease-in-out infinite;
+    transform-origin:top center;
+  }
+  @keyframes swing{
+    0%,100%{ transform:rotate(-4deg); }
+    50%{ transform:rotate(4deg); }
+  }
+  .gate-form{
+    display:flex;
+    gap:.6rem;
+    margin-top:1.4rem;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  #nameCheck{
+    flex:1 1 220px;
+    padding:.85rem 1.1rem;
+    border-radius:999px;
+    border:1px solid var(--card-border);
+    background:rgba(255,255,255,.08);
+    color:var(--text-light);
+    font-family:var(--font-body);
+    font-size:1rem;
+  }
+  #nameCheck::placeholder{ color:rgba(255,248,242,.55); }
+  .unlock-btn{
+    padding:.85rem 1.6rem;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    font-family:var(--font-head);
+    font-weight:700;
+    font-size:.95rem;
+    color:#2a0f0f;
+    background:linear-gradient(90deg, var(--accent-gold), var(--accent-coral));
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .unlock-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(255,107,107,.35); }
+
+  #gateMsg{
+    margin-top:1rem;
+    min-height:1.4em;
+    font-size:.92rem;
+    color:var(--accent-pink);
+  }
+
+  #letterContent{
+    max-width:480px;
+    margin:0 auto;
+    background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.03));
+    border:1px solid var(--card-border);
+    border-radius:22px;
+    padding:2.6rem 2.2rem;
+    backdrop-filter:blur(8px);
+    text-align:left;
+  }
+  #letterContent[hidden]{ display:none; }
+  #letterContent .to-line{
+    font-family:var(--font-display);
+    font-size:1.9rem;
+    color:var(--accent-gold);
+    margin-bottom:1rem;
+  }
+  #letterContent p{
+    color:var(--text-soft);
+    line-height:1.85;
+    margin-bottom:1rem;
+    font-size:1.02rem;
+  }
+  #letterContent .sign-off{
+    font-family:var(--font-display);
+    font-size:1.6rem;
+    color:var(--text-light);
+    margin-top:1.4rem;
+  }
+
+  /* ============ 6. FOOTER ============ */
+  footer{
+    text-align:center;
+    padding:3rem 1.5rem 3.5rem;
+    color:var(--text-soft);
+    font-size:.9rem;
+    position:relative;
+    z-index:1;
+  }
+  footer .heart{ color:var(--accent-pink); }
+
+  /* reveal-on-scroll */
+  .reveal{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* photos edit */
+
+  .mine1{
+     padding:.85rem 1.6rem;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    font-family:var(--font-head);
+    font-weight:700;
+    font-size:.95rem;
+    color:#2a0f0f;
+    background:linear-gradient(90deg, var(--accent-gold), var(--accent-coral));
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+
+ 
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ambient floating hearts, purely decorative -->
+<div id="ambient"></div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div id="balloon-layer"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">A little something for</span>
+    <h1 class="hero-title">Happy Birthday</h1>
+    <div class="hero-name">Nimco 🎂</div>
+    <p class="hero-tagline">
+      One page, made just for you — full of your photos, your memories,
+      and a little letter that only you can open. Scroll down and enjoy your day 💛
+    </p>
+    <div class="scroll-cue">
+      <span>keep scrolling</span>
+      <span class="arrow">↓</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FILM STRIP REEL ============ -->
+<section id="reel">
+  <div class="reel-heading">
+    <span class="eyebrow reveal">Rewind</span>
+    <h2 class="reveal">Every little memory, all in one reel 🎞️</h2>
+  </div>
+
+  <div class="filmstrip-track reveal">
+    <div class="sprocket-row">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="filmstrip-row" id="stripA">
+      <div class="film-frame"><img src="images/nimco_11.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_12.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_13.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_14.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_15.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_16.jpeg" alt="This is photo"></div>
+      <!-- duplicate set so the loop is seamless -->
+      <div class="film-frame"><img src="images/nimco_17.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_18.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_20.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_19.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_2.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_17.jpeg" alt="This is photo"></div>
+    <div class="film-frame"><img src="images/nimco_11.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_12.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_13.jpeg" alt="This is photo"></div>
+    </div>
+    <div class="sprocket-row">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="filmstrip-track tilt-b reveal">
+    <div class="sprocket-row">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="filmstrip-row reverse" id="stripB">
+      <div class="film-frame"><img src="images/nimco_10.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_3.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_8.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_7.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_9.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_6.jpeg" alt=""></div>
+      <!-- duplicate set so the loop is seamless -->
+      <div class="film-frame"><img src="images/nimco_2.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_3.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_4.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_1.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_7.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_5.jpeg" alt="This is photo"></div>
+       <div class="film-frame"><img src="images/nimco_10.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_3.jpeg" alt="This is photo"></div>
+      <div class="film-frame"><img src="images/nimco_3.jpeg" alt="This is photo"></div>
+    </div>
+    <div class="sprocket-row">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <figure class="reel-feature reveal">
+    <!-- REPLACE PHOTO (main featured photo) -->
+    <img src="images/nimco_5.jpeg" alt="This is photo">
+  </figure>
+  <p class="reel-caption reveal">A whole reel of moments with <b>Nimco</b> — and this is only page one 🎬💛</p>
+</section>
+
+  <style>
+    #stripA{ animation-duration: 26s; }
+    #stripB{ animation-duration: 32s; }
+    @media (prefers-reduced-motion: reduce){
+      #stripA, #stripB{ animation: none; }
+    }
+  </style>
+
+<!-- ============ GALLERY ============ -->
+<section class="section" id="gallery">
+  <span class="eyebrow reveal">Memories</span>
+  <h2 class="section-title reveal">Some of our favourite moments</h2>
+  <p class="section-sub reveal">Tap ✏️ REPLACE PHOTO in the code to swap these for your real pictures with Nimco.</p>
+
+  <div class="gallery-grid">
+    <figure class="polaroid reveal">
+      <!-- REPLACE PHOTO 1 -->
+      <img src="images/with_my_gurll1.jpeg" alt="Photo memory 1">
+      <figcaption><!-- REPLACE CAPTION 1 -->  <h1>My Special Gift</h1> <p class="mine1">You are honestly one of the most special people in my life You’re the kind of person I could talk to for hours, days, even weeks and nights, and somehow I would never get tired of you With you conversations never feel forced or boring even the simplest things become meaningful just because I’m sharing them with you.
+
+You’re the person I feel completely comfortable with the one I can tell almost anything without being afraid of being judged or misunderstood I can share my happiness, my sadness, my random thoughts, my fears, my dreams, and even the things I don’t know how to explain Somehow, with you, I can just be myself Sometimes I sit and wonder how I became so lucky to have someone like you in my life  Out of all the people in this world, Allah chose for our paths to cross, and honestly, I will always be grateful for that.
+
+You are not just a friend to me You feel like a beautiful gift that Allah placed in my life at a time I didn't even know I needed someone like you.
+
+I believe some people come into our lives for a reason We may not understand the reason immediately, but with time, we realize that their presence was a blessing And when I look at you, I feel like that's what you are to me a blessing I never want to take for granted.
+
+Allah could have allowed me to meet so many different people, but somehow, He allowed me to meet you.
+
+And that's something I will always be thankful . 
+
+
+
+
+You became my comfort without even trying.
+
+Sometimes I think, “What did I do to deserve a friend like this?” I may never know the answer, but I know one thing: I will always thank Allah for you.
+
+Thank you, Allah, for creating her.
+
+Thank you for giving her such a beautiful heart.
+
+Thank you for letting her exist in the same world as me.
+
+Thank you for allowing our paths to cross.
+
+And thank you for giving me someone who makes life feel a little softer, happier, and more beautiful.
+
+You are one of those blessings I hope I never become too used to I hope I always remember how special it is to have someone like you in my life.
+
+If one day you ever wonder what you mean to me, remember this:
+
+You are one of the gifts Allah gave me that I never knew I needed, but now I can't imagine my life without.
+
+I don't know what the future holds, and I don't know where life will take us, but I pray that Allah always protects you, gives you happiness, keeps your heart peaceful, and surrounds you with everything beautiful that you deserve.
+
+And if Allah allows our friendship to remain for many years, I will consider that another blessing.
+
+Because among all the things I could have asked Allah for, somehow He gave me you.
+
+And for that, I will always say:
+
+Alhamdulillah for you. </P> </figcaption>
+    </figure>
+    <figure class="polaroid reveal">
+      <!-- REPLACE PHOTO 2 -->
+      <img src="images/with_my_gurll4.jpeg" alt="Photo memory 2">
+      <figcaption><!-- REPLACE CAPTION 2 --> <h1 class="with1">My Comfort Zone</h1>I love how safe and comfortable I feel around you You’re not just someone I talk to you’re someone I can truly open my heart to. I can laugh with you, cry with you, be completely stupid with you, or sit in silence, and it would still feel right
+
+Some people come into your life and become memories. But you’re the kind of person I want to keep in my life for a very, very long time. I don’t think you realize how much your presence means to me You’re my comfort, my favorite person to talk to, and someone I’m genuinely grateful to have You are the person I can come to without thinking twice, without worrying about what to say or how I'll be understood. With you, I don't feel like I have to pretend to be okay, or hide the parts of myself that I usually keep quiet.
+
+I can be completely myself with you.
+
+I can be loud, quiet, emotional, annoying, happy, confused, or completely random, and somehow I still feel accepted. That's something I don't find easily in people You have this way of making everything feel a little less heavy Sometimes I don't even need advice or a solution I just need to talk to you, hear you, laugh with you, and suddenly whatever was bothering me doesn't feel quite as big anymore.
+
+You're the person I want to tell everything to the things that make me excited, the things that hurt me, the random thoughts that come into my head, and even the things I don't know how to explain.
+
+With you, silence isn't awkward.
+
+Conversations don't feel forced.
+
+And being myself doesn't feel scary.
+
+That's what you are to me a place where I can let my guard down.
+
+A place where I feel understood.
+
+A place where I feel safe.
+
+A place where I don't have to be anything other than myself.
+
+And honestly, I hope you know how special that is.
+
+Because in a world where it's so easy to feel misunderstood, finding someone who feels like home is rare.
+
+And somehow, you became that person for me. </figcaption>
+    </figure>
+    <figure class="polaroid reveal">
+      <!-- REPLACE PHOTO 3 -->
+      <img src="images/with_my_gurll2.jpeg" alt="Photo memory 3">
+      <figcaption><!-- REPLACE CAPTION 3 --> <h1 class="with2">Somehow My Soulmate</h1> you are such an incridible person that my soul wants to be with in every minute i don’t know am feeling even word special its small to say to you you are a precious that everbody can't get easily am really reallly reallly grateful, happy, glad, lucky, thank god that you are part of my life . 
+        you made the normal days special and the special days you make it unforgattable , the way you come to my life was like normal but somehow you become special part of it You are the one person I could talk to for hours and somehow still have more to say. I could talk to you all day, all night, for days, weeks, or even years, and I don't think I would ever get bored of hearing your voice or sharing little pieces of my life with you Even our most random conversations mean something to me Sometimes I genuinely can't believe how similar we are. Like, how is it even possible for two people to think so alike, feel things so deeply, understand each other so naturally, and still somehow find each other in this huge world?
+
+Sometimes you say something and I'm literally thinking, “Wait… I was just thinking the exact same thing.” 
+
+It's crazy how we can have the same thoughts, the same kind of humor, the same reactions, and sometimes even understand what the other person means without having to explain much.
+
+It's like our minds somehow speak the same language.
+
+And honestly, I don't know how it's possible  Out of all the people in the world, how did I end up meeting someone who feels so much like me?
+
+Maybe that's why talking to you feels so easy I don't have to explain every little thing because somehow, you just get it.
+
+Sometimes it genuinely feels like I found a part of myself in another person.
+
+And that's one of the things I love most about us.  </figcaption>
+    </figure>
+    <figure class="polaroid reveal">
+      <!-- REPLACE PHOTO 4 -->
+      <img src="images/with_my_gurll3.jpeg" alt="Photo memory 4">
+      <figcaption><!-- REPLACE CAPTION 4 --> <h1 class="with3">Thank you for being you.</h1>
+
+Thank you for being the person who makes me feel like I can be completely myself without worrying about being too much, too quiet, and too emotional,  Thank you for listening to all my stories, even the ones that make absolutely no sense. Thank you for staying through my random thoughts, my endless conversations, my good days, and the days when I don't even know what's wrong with me.
+
+Thank you for being someone I can trust with the little things and the big things For being someone I can talk to at any hour and never feel like I'm bothering you There is something so comforting about knowing that I can come to you and just talk, whether I have something important to say or I simply want someone there.
+
+Thank you for every laugh you've given me, every conversation we've had, every moment you've made brighter without even trying You probably don't realize how many small moments with you have become memories that I genuinely treasure.
+
+Thank you for accepting me as I am For making me feel heard when I need to speak, understood when I can't find the right words, and comfortable enough to show you the parts of me I don't show everyone.
+
+Most of all, Thank you for being my comfort, my favorite person to talk to, and one of the people I never want to lose. </figcaption>
+    </figure>
+    <figure class="polaroid reveal">
+      <!-- REPLACE PHOTO 5 -->
+      <img src="images/wth_my_gurll6.jpeg" alt="Photo memory 5">
+      <figcaption><!-- REPLACE CAPTION 5 --> <h1 class="with4">My All In One</h1> Sometimes I genuinely wonder… how can one person possibly be this perfect in so many ways?
+
+How can someone be so beautiful, but have an even more beautiful heart? How can someone be so pretty and cute, yet still be so kind, funny, caring, humble, and full of happiness?
+
+You have this rare combination that I honestly don't know how to describe. Your beauty is the first thing someone might notice, but your heart is what makes people stay. You're beautiful on the outside, but somehow your personality makes you even more beautiful from the inside.
+
+You're funny when I need to laugh, comforting when I need someone, happy enough to make my mood better, and kind enough to make me feel understood. You can be cute without trying, pretty without realizing it, and somehow make everything around you feel a little brighter just by being there.
+
+And the thing I love most is that you don't even seem to realize how special you are.
+
+You don't have to try to be amazing. You just are.
+
+Your smile, your laugh, your way of talking, your little habits, your kindness, your sense of humor, the way you care about people all those little things come together and make you someone incredibly rare.
+
+Honestly, sometimes I look at you and think:
+
+**How did God put so much beauty, kindness, happiness, cuteness, humor, and goodness into one person?**
+
+And then I remember how lucky I am that this person is in my life.
+
+You're not perfect because you never make mistakes.
+
+You're perfect in the way that you are completely, beautifully, unapologetically you.
+
+And I wouldn't change a single thing about that. 
+</figcaption>
+    </figure>
+    <figure class="polaroid reveal">
+      <!-- REPLACE PHOTO 6 -->
+      <img src="images/with_my_gurll5.jpeg" alt="Photo memory 6">
+      <figcaption><!-- REPLACE CAPTION 6 --> <h1 class="with6">The World is lucky to have you and am The Luckiest</h1> I honestly find myself thanking God that you were born and that somehow, out of all the people in this world, our paths crossed.
+
+Thank God you came into this world.
+
+Because if you hadn't, I would have never known what it feels like to have someone like you in my life I would have never known the comfort of having a person I can talk to endlessly, the kind of person who makes ordinary moments feel special just by being there.
+
+I thank God for creating you exactly the way you are for your heart, your soul, your kindness, your weirdness, your laughter, and every little thing that makes you you.
+
+Maybe you don't realize how much your existence means to someone, but it means so much to me.
+
+Out of billions of people, somehow you exist.
+
+And somehow, I got lucky enough to know you.
+
+That's something I will always be grateful for.
+
+If I could go back and change anything about my life, I wouldn't change the moment I met you. Because finding you was one of those beautiful things I never knew I needed.
+
+So, thank God you were born.
+
+Thank God you exist.
+
+Thank God our paths crossed.
+
+And thank God I get to call you my sister.</figcaption>
+    </figure>
+  </div>
+</section>
+
+ <!-- video section -->
+<div class="hero-video-wrap">
+  <video controls autoplay muted loop playsinline poster="fallback.jpg">
+    <source src="images/Special_video.mp4" type="video/mp4">
+  </video>
+
+ 
+</div>
+
+
+
+<!-- ============ WISHES ============ -->
+<section class="section" id="wishes">
+  <span class="eyebrow reveal">For you</span>
+  <h2 class="section-title reveal">A few reasons we celebrate you</h2>
+  <p class="section-sub reveal">Edit any of these — search "REPLACE WISH" in the code.</p>
+
+  <div class="wish-grid">
+    <div class="wish-card reveal">
+      <span class="glyph">✨</span>
+      <h3>REPLACE WISH TITLE 1</h3>
+      <p>REPLACE WISH TEXT 1 — write something true and specific about Nimco here.</p>
+    </div>
+    <div class="wish-card reveal">
+      <span class="glyph">💛</span>
+      <h3>REPLACE WISH TITLE 2</h3>
+      <p>REPLACE WISH TEXT 2 — a favourite memory, an inside joke, a thank you.</p>
+    </div>
+    <div class="wish-card reveal">
+      <span class="glyph">🎈</span>
+      <h3>REPLACE WISH TITLE 3</h3>
+      <p>REPLACE WISH TEXT 3 — your wish for her year ahead.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAVE THE DATE ============ -->
+<section class="section" id="calendar">
+  <span class="eyebrow reveal">Save the date</span>
+  <h2 class="section-title reveal">Mark your calendar 💜</h2>
+  <p class="section-sub reveal">The whole world should know — this is Nimco's day.</p>
+
+  <div class="cal-wrap reveal">
+    <div class="cal-frame">
+      <!-- REPLACE PHOTO (calendar side image) -->
+      <img src="images/Nimco_1.jpeg" alt="This is photo">
+    </div>
+    <div>
+      <div class="cal-month">September 2026</div>
+      <div class="cal-grid">
+        <div class="dow">Su</div><div class="dow">Mo</div><div class="dow">Tu</div>
+        <div class="dow">We</div><div class="dow">Th</div><div class="dow">Fr</div><div class="dow">Sa</div>
+
+        <div class="day blank"></div><div class="day blank"></div>
+        <div class="day">1</div><div class="day">2</div><div class="day">3</div>
+        <div class="day">4</div><div class="day">5</div>
+
+        <div class="day">6</div><div class="day">7</div><div class="day">8</div>
+        <div class="day special">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div>
+
+        <div class="day">13</div><div class="day">14</div><div class="day">15</div>
+        <div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day">19</div>
+
+        <div class="day">20</div><div class="day">21</div><div class="day">22</div>
+        <div class="day">23</div><div class="day">24</div><div class="day">25</div><div class="day">26</div>
+
+        <div class="day">27</div><div class="day">28</div><div class="day">29</div>
+        <div class="day">30</div>
+      </div>
+      <div id="countdown"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOCKED LETTER ============ -->
+<section class="section" id="letter">
+  <span class="eyebrow reveal">Just for you</span>
+  <h2 class="section-title reveal">A private letter 💌</h2>
+  <p class="section-sub reveal" style="margin-left:auto;margin-right:auto;text-align:center;">
+    This part only opens for Nimco. Type your name below to unlock it.
+  </p>
+
+  <div id="letterGate" class="reveal">
+    <div class="envelope-wrap">
+      <span class="envelope-icon">💌</span>
+      <div style="font-family:var(--font-head); font-size:1.05rem; color:var(--text-light);">
+        Who's reading this?
+      </div>
+      <div class="gate-form">
+        <input id="nameCheck" type="text" placeholder="Type your name…" autocomplete="off">
+        <button class="unlock-btn" onclick="checkName()">Unlock 🔓</button>
+      </div>
+      <p id="gateMsg"></p>
+    </div>
+  </div>
+
+  <div id="letterContent" hidden>
+    <div class="to-line">Dear Nimco,</div>
+    <!-- REPLACE LETTER: write your real message below -->
+    <p>REPLACE LETTER — this is the part where you write something just for her.
+      Talk about what she means to you, a memory you'll never forget, or
+      something you've always wanted to tell her.</p>
+    <p>REPLACE LETTER — add a second paragraph here if you'd like. This whole
+      section is private and only shows up after someone types "Nimco",
+      so make it as personal as you want.</p>
+    <p class="sign-off">With love, always 💜</p>
+  </div>
+</section>
+
+<footer>
+  Made with <span class="heart">♥</span> for Nimco's birthday.
+</footer>
+
+<script>
+/* ==============================================================
+   1. AMBIENT FLOATING HEARTS — soft background decoration
+   ============================================================== */
+(function ambientHearts(){
+  const layer = document.getElementById('ambient');
+  const glyphs = ['🎈','✨','💛','🎉'];
+  for(let i=0;i<14;i++){
+    const el = document.createElement('div');
+    el.className='amb-heart';
+    el.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+    el.style.left = Math.random()*100+'%';
+    el.style.animationDuration = (14+Math.random()*12)+'s';
+    el.style.animationDelay = (Math.random()*14)+'s';
+    el.style.fontSize = (1+Math.random()*1.2)+'rem';
+    layer.appendChild(el);
+  }
+})();
+
+/* ==============================================================
+   2. BALLOONS — big burst on first load, then a gentle trickle
+   ============================================================== */
+const balloonLayer = document.getElementById('balloon-layer');
+const balloonColors = ['#FF6B6B','#FFCB47','#21D5B4','#F4548C','#52C7F2','#B98CFF'];
+
+function spawnBalloon(){
+  const b = document.createElement('div');
+  b.className = 'balloon';
+  const color = balloonColors[Math.floor(Math.random()*balloonColors.length)];
+  b.style.background = `radial-gradient(circle at 32% 28%, rgba(255,255,255,.75), ${color} 65%)`;
+  const size = 42 + Math.random()*34;
+  b.style.width = size+'px';
+  b.style.height = (size*1.22)+'px';
+  b.style.left = (Math.random()*92)+'%';
+  const duration = 7 + Math.random()*5;
+  b.style.animationDuration = duration+'s';
+  balloonLayer.appendChild(b);
+  setTimeout(()=> b.remove(), duration*1000 + 200);
+}
+
+function balloonBurst(count){
+  for(let i=0;i<count;i++){
+    setTimeout(()=> spawnBalloon(), i*90);
+  }
+}
+
+/* confetti burst, layered with the balloons on first load */
+function confettiBurst(count){
+  const colors = balloonColors;
+  for(let i=0;i<count;i++){
+    const c = document.createElement('div');
+    c.className='confetti-piece';
+    c.style.left = Math.random()*100+'%';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (3+Math.random()*2.2)+'s';
+    c.style.animationDelay = (Math.random()*0.6)+'s';
+    c.style.borderRadius = Math.random()>.5 ? '50%' : '2px';
+    balloonLayer.appendChild(c);
+    setTimeout(()=> c.remove(), 6200);
+  }
+}
+
+// first-entrance celebration
+window.addEventListener('load', ()=>{
+  balloonBurst(26);
+  confettiBurst(50);
+  // gentle ongoing trickle of balloons so the hero stays alive
+  setInterval(()=> spawnBalloon(), 2200);
+});
+
+/* ==============================================================
+   3. SCROLL REVEAL for sections
+   ============================================================== */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('is-visible');
+      io.unobserve(entry.target);
+    }
+  });
+},{ threshold:0.15 });
+revealEls.forEach(el=> io.observe(el));
+
+// video section
+// ================= VIDEO =================
+const video = document.querySelector("video");
+
+if (video) {
+  video.addEventListener("error", () => {
+    console.log("Video could not be loaded.");
+  });
+}
+//  video section
+/* ==============================================================
+   3b. COUNTDOWN to 9/9/2026
+   ============================================================== */
+(function countdown(){
+  // REPLACE DATE: change the target date here if needed (YYYY, MM-1, DD)
+  const target = new Date(2026, 8, 9); // September 9, 2026
+  const el = document.getElementById('countdown');
+  const now = new Date();
+  const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  const startOfNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.round((startOfTarget - startOfNow) / 86400000);
+
+  if(diffDays > 0){
+    el.textContent = `🎉 ${diffDays} day${diffDays===1?'':'s'} to go!`;
+  } else if(diffDays === 0){
+    el.textContent = `🎂 It's today — happy birthday, Nimco!`;
+  } else {
+    el.textContent = `💜 We celebrated this day ${Math.abs(diffDays)} day${Math.abs(diffDays)===1?'':'s'} ago`;
+  }
+})();
+
+/* ==============================================================
+   4. LOCKED LETTER — only unlocks for "Nimco"
+   ============================================================== */
+// REPLACE PASSWORD: change the string below to require a different name
+const REQUIRED_NAME = "nimco";
+
+function checkName(){
+  const input = document.getElementById('nameCheck');
+  const msg = document.getElementById('gateMsg');
+  const value = input.value.trim().toLowerCase();
+
+  if(value === REQUIRED_NAME){
+    document.getElementById('letterGate').style.display = 'none';
+    const content = document.getElementById('letterContent');
+    content.hidden = false;
+    confettiBurst(40);
+    content.scrollIntoView({ behavior:'smooth', block:'center' });
+  } else if(value.length === 0){
+    msg.textContent = "Type a name first 🙂";
+  } else {
+    msg.textContent = "Hmm, this letter is only for Nimco 💜 try again!";
+  }
+}
+
+document.getElementById('nameCheck').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') checkName();
+});
+</script>
+
+</body>
+</html>
